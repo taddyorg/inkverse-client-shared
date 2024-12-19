@@ -7,16 +7,16 @@ const schema = process.env.NODE_ENV !== 'production'
 const config: CodegenConfig = {
   overwrite: true,
   schema,
-  documents: "src/shared/graphql/**/*.graphql",
+  documents: "shared/graphql/**/*.graphql",
   generates: {
-    "src/shared/graphql/types.ts": {
+    "shared/graphql/types.ts": {
       config: {
         useIndexSignature: true,
         useTypeImports: true,
       },
       plugins: ["typescript", "typescript-resolvers"]
     },
-    "src/shared/graphql/operations.ts": {
+    "shared/graphql/operations.ts": {
       plugins: [
         "typescript",
         "typescript-operations",

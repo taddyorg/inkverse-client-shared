@@ -56,7 +56,7 @@ export type ComicIssue = {
   uuid: Scalars['ID']['output'];
 };
 
-/**  Comic Issue Details  */
+/**  Comic Series Details  */
 export type ComicSeries = {
   __typename?: 'ComicSeries';
   /**  Stringified JSON details for the banner art. Convert to JSON to use.  */
@@ -120,7 +120,7 @@ export type ComicSeries = {
 };
 
 
-/**  Comic Issue Details  */
+/**  Comic Series Details  */
 export type ComicSeriesIssuesArgs = {
   includeRemovedIssues?: InputMaybe<Scalars['Boolean']['input']>;
   limitPerPage?: InputMaybe<Scalars['Int']['input']>;
