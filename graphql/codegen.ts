@@ -1,22 +1,27 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-
-const schema = process.env.NODE_ENV !== 'production' 
-  ? "http://localhost:3010/api/graphql" 
-  : "https://api-v1.inkverse.co";
+import appConfig from '../../config.js';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema,
+  schema: appConfig.SERVER_URL,
   documents: "shared/graphql/**/*.graphql",
   generates: {
     "shared/graphql/types.ts": {
       config: {
         useIndexSignature: true,
         useTypeImports: true,
+        namingConvention: {
+          enumValues: 'upper-case#upperCase'
+        }
       },
       plugins: ["typescript", "typescript-resolvers"]
     },
     "shared/graphql/operations.ts": {
+      config: {
+        namingConvention: {
+          enumValues: 'upper-case#upperCase'
+        }
+      },
       plugins: [
         "typescript",
         "typescript-operations",
