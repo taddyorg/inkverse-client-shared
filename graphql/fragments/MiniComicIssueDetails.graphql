@@ -1,0 +1,10 @@
+fragment miniComicIssueDetails on ComicIssue {
+    uuid
+    seriesUuid
+    name
+    thumbnailImageAsString
+    position
+    datePublished
+    scopesForExclusiveContent
+    dateExclusiveContentAvailable
+}

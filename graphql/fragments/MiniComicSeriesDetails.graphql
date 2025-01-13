@@ -1,0 +1,5 @@
+fragment miniComicSeriesDetails on ComicSeries {
+    uuid
+    name
+    shortUrl
+} 

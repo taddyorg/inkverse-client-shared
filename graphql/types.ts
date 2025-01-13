@@ -57,6 +57,14 @@ export type ComicIssue = {
   uuid: Scalars['ID']['output'];
 };
 
+export type ComicIssueForSeries = {
+  __typename?: 'ComicIssueForSeries';
+  /**  The issues  */
+  issues?: Maybe<Array<Maybe<ComicIssue>>>;
+  /**  Series uuid  */
+  seriesUuid: Scalars['ID']['output'];
+};
+
 /**  Comic Series Details  */
 export type ComicSeries = {
   __typename?: 'ComicSeries';
@@ -90,8 +98,6 @@ export type ComicSeries = {
   isCompleted?: Maybe<Scalars['Boolean']['output']>;
   /**  Number of issues in a comic series  */
   issueCount?: Maybe<Scalars['Int']['output']>;
-  /**  A list of issues for this comic series  */
-  issues?: Maybe<Array<Maybe<ComicIssue>>>;
   /**  A hash of the details for all issues for this comic. It may be useful for you to save this property in your database and compare it to know if there are any new or updated issues since the last time you checked  */
   issuesHash?: Maybe<Scalars['String']['output']>;
   /**  The language the comic series is in  */
@@ -118,16 +124,6 @@ export type ComicSeries = {
   thumbnailImageAsString?: Maybe<Scalars['String']['output']>;
   /**  Unique identifier for this comic  */
   uuid: Scalars['ID']['output'];
-};
-
-
-/**  Comic Series Details  */
-export type ComicSeriesIssuesArgs = {
-  includeRemovedIssues?: InputMaybe<Scalars['Boolean']['input']>;
-  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  searchTerm?: InputMaybe<Scalars['String']['input']>;
-  sortOrder?: InputMaybe<SortOrder>;
 };
 
 /**  Layout types for comic series  */
@@ -807,7 +803,7 @@ export type Query = {
   /**  Get documentation  */
   getDocumentation?: Maybe<Documentation>;
   /**  Get multiple issues for a comic series  */
-  getIssuesForComicSeries: Array<Maybe<ComicIssue>>;
+  getIssuesForComicSeries?: Maybe<ComicIssueForSeries>;
 };
 
 
@@ -852,8 +848,8 @@ export type QueryGetDocumentationArgs = {
 
 export type QueryGetIssuesForComicSeriesArgs = {
   includeRemovedIssues?: InputMaybe<Scalars['Boolean']['input']>;
-  limitPerPage: Scalars['Int']['input'];
-  page: Scalars['Int']['input'];
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
   seriesUuid: Scalars['ID']['input'];
   sortOrder?: InputMaybe<SortOrder>;
 };
@@ -957,6 +953,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ComicIssue: ResolverTypeWrapper<ComicIssue>;
+  ComicIssueForSeries: ResolverTypeWrapper<ComicIssueForSeries>;
   ComicSeries: ResolverTypeWrapper<ComicSeries>;
   ComicSeriesLayoutType: ComicSeriesLayoutType;
   ComicSeriesType: ComicSeriesType;
@@ -985,6 +982,7 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   ComicIssue: ComicIssue;
+  ComicIssueForSeries: ComicIssueForSeries;
   ComicSeries: ComicSeries;
   ComicStory: ComicStory;
   Creator: Creator;
@@ -1020,6 +1018,12 @@ export type ComicIssueResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ComicIssueForSeriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['ComicIssueForSeries'] = ResolversParentTypes['ComicIssueForSeries']> = ResolversObject<{
+  issues?: Resolver<Maybe<Array<Maybe<ResolversTypes['ComicIssue']>>>, ParentType, ContextType>;
+  seriesUuid?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ComicSeriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['ComicSeries'] = ResolversParentTypes['ComicSeries']> = ResolversObject<{
   bannerImageAsString?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   contentRating?: Resolver<Maybe<ResolversTypes['ContentRating']>, ParentType, ContextType>;
@@ -1036,7 +1040,6 @@ export type ComicSeriesResolvers<ContextType = any, ParentType extends Resolvers
   isBlocked?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isCompleted?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   issueCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  issues?: Resolver<Maybe<Array<Maybe<ResolversTypes['ComicIssue']>>>, ParentType, ContextType, Partial<ComicSeriesIssuesArgs>>;
   issuesHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   language?: Resolver<Maybe<ResolversTypes['Language']>, ParentType, ContextType>;
   layoutType?: Resolver<Maybe<ResolversTypes['ComicSeriesLayoutType']>, ParentType, ContextType>;
@@ -1129,11 +1132,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getCreatorContent?: Resolver<Maybe<ResolversTypes['CreatorContent']>, ParentType, ContextType, Partial<QueryGetCreatorContentArgs>>;
   getCreatorLinksForSeries?: Resolver<Maybe<Array<Maybe<ResolversTypes['CreatorLinkDetails']>>>, ParentType, ContextType, RequireFields<QueryGetCreatorLinksForSeriesArgs, 'contentType' | 'contentUuid'>>;
   getDocumentation?: Resolver<Maybe<ResolversTypes['Documentation']>, ParentType, ContextType, RequireFields<QueryGetDocumentationArgs, 'id'>>;
-  getIssuesForComicSeries?: Resolver<Array<Maybe<ResolversTypes['ComicIssue']>>, ParentType, ContextType, RequireFields<QueryGetIssuesForComicSeriesArgs, 'limitPerPage' | 'page' | 'seriesUuid'>>;
+  getIssuesForComicSeries?: Resolver<Maybe<ResolversTypes['ComicIssueForSeries']>, ParentType, ContextType, RequireFields<QueryGetIssuesForComicSeriesArgs, 'seriesUuid'>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   ComicIssue?: ComicIssueResolvers<ContextType>;
+  ComicIssueForSeries?: ComicIssueForSeriesResolvers<ContextType>;
   ComicSeries?: ComicSeriesResolvers<ContextType>;
   ComicStory?: ComicStoryResolvers<ContextType>;
   Creator?: CreatorResolvers<ContextType>;
