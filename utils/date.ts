@@ -1,15 +1,15 @@
-import { formatDate } from 'date-fns/format'
+import { format as formatDate } from 'date-fns'
 
-const currentTime = new Date()
-const currentYear = currentTime.getFullYear()
+const currentYear = new Date().getFullYear()
 
 export function prettyFormattedDate(date: Date, showTime = false): string {
   if (!date) { return "" }
-  
+
   const isCurrentYear = date.getFullYear() === currentYear
+  
   const format = [
-    'MMM Do',                    // Base format (e.g., "Jan 1st")
-    !isCurrentYear && ', YYYY',  // Add year if not current
+    'MMM d',                     // Base format (e.g., "Jan 1")
+    !isCurrentYear && ', yyyy',  // Add year if not current
     showTime && ' h:mm a'        // Add time if requested
   ]
     .filter(Boolean)

@@ -2,8 +2,8 @@ fragment miniComicIssueDetails on ComicIssue {
     uuid
     seriesUuid
     name
-    thumbnailImageAsString
     position
+    thumbnailImageAsString
     datePublished
     scopesForExclusiveContent
     dateExclusiveContentAvailable

@@ -499,7 +499,10 @@ export type CreatorContent = {
   creatorUuid?: Maybe<Scalars['ID']['output']>;
   /**  A hash of all creatorcontent details  */
   hash?: Maybe<Scalars['String']['output']>;
-  /**  (Old) Unique identifier for this creatorcontent  */
+  /**
+   *  Unique identifier for this creatorcontent
+   * @deprecated Use uuid instead
+   */
   id?: Maybe<Scalars['ID']['output']>;
   /**  Position on the creator feed  */
   position?: Maybe<Scalars['Int']['output']>;
@@ -808,7 +811,8 @@ export type Query = {
 
 
 export type QueryGetComicIssueArgs = {
-  uuid?: InputMaybe<Scalars['ID']['input']>;
+  seriesUuid: Scalars['ID']['input'];
+  uuid: Scalars['ID']['input'];
 };
 
 
@@ -1125,7 +1129,7 @@ export type LinkDetailsResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  getComicIssue?: Resolver<Maybe<ResolversTypes['ComicIssue']>, ParentType, ContextType, Partial<QueryGetComicIssueArgs>>;
+  getComicIssue?: Resolver<Maybe<ResolversTypes['ComicIssue']>, ParentType, ContextType, RequireFields<QueryGetComicIssueArgs, 'seriesUuid' | 'uuid'>>;
   getComicSeries?: Resolver<Maybe<ResolversTypes['ComicSeries']>, ParentType, ContextType, Partial<QueryGetComicSeriesArgs>>;
   getComicStory?: Resolver<Maybe<ResolversTypes['ComicStory']>, ParentType, ContextType, Partial<QueryGetComicStoryArgs>>;
   getCreator?: Resolver<Maybe<ResolversTypes['Creator']>, ParentType, ContextType, Partial<QueryGetCreatorArgs>>;
