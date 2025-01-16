@@ -562,6 +562,22 @@ export enum Genre {
   COMICSERIES_ZOMBIES = 'COMICSERIES_ZOMBIES'
 }
 
+export type HomeScreenComicSeries = {
+  __typename?: 'HomeScreenComicSeries';
+  /**  List of comic series  */
+  comicSeries?: Maybe<Array<Maybe<ComicSeries>>>;
+  /**  Id of the home screen comic series  */
+  id?: Maybe<Scalars['ID']['output']>;
+};
+
+export type HomeScreenCuratedList = {
+  __typename?: 'HomeScreenCuratedList';
+  /**  Id of the home screen curated list  */
+  id?: Maybe<Scalars['ID']['output']>;
+  /**  List of curated lists  */
+  lists?: Maybe<Array<Maybe<List>>>;
+};
+
 /**  Languages (ISO 639-2 https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes)  */
 export enum Language {
   ABKHAZIAN = 'ABKHAZIAN',
@@ -788,6 +804,55 @@ export enum LinkType {
   YOUTUBE = 'YOUTUBE'
 }
 
+/**  List Details  */
+export type List = {
+  __typename?: 'List';
+  /**  The url for the banner image  */
+  bannerImageUrl?: Maybe<Scalars['String']['output']>;
+  /**  Comic series items in this list  */
+  comicSeries?: Maybe<Array<Maybe<ComicSeries>>>;
+  /**  Rating of the comic series  */
+  contentRating?: Maybe<ContentRating>;
+  /**  The date this list was created  */
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  /**  The description for a list  */
+  description?: Maybe<Scalars['String']['output']>;
+  /**  Genres for the comic series  */
+  genres?: Maybe<Array<Maybe<Genre>>>;
+  /**  Unique identifier for this list  */
+  id: Scalars['ID']['output'];
+  /**  The language the comic series is in  */
+  language?: Maybe<Language>;
+  /**  The name (title) for a list  */
+  name?: Maybe<Scalars['String']['output']>;
+  /**  A boolean indicating whether this list is private  */
+  privacyType: PrivacyType;
+  /**  Tags for the comic series  */
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  /**  The type of this list  */
+  type: ListType;
+  /**  The user id of the user who created this list  */
+  userId: Scalars['ID']['output'];
+};
+
+/**  The type of list  */
+export enum ListType {
+  /**  A list of comic issues  */
+  COMICISSUES = 'COMICISSUES',
+  /**  A list of comic series  */
+  COMICSERIES = 'COMICSERIES',
+  /**  A list of creators  */
+  CREATORS = 'CREATORS'
+}
+
+/**  The privacy types for a list  */
+export enum PrivacyType {
+  /**  The list is private  */
+  PRIVATE = 'PRIVATE',
+  /**  The list is public  */
+  PUBLIC = 'PUBLIC'
+}
+
 export type Query = {
   __typename?: 'Query';
   /**  Get details on a comic issue */
@@ -802,10 +867,22 @@ export type Query = {
   getCreatorContent?: Maybe<CreatorContent>;
   /**  Get efficient links for creators of content  */
   getCreatorLinksForSeries?: Maybe<Array<Maybe<CreatorLinkDetails>>>;
+  /**  Get a list of curated lists  */
+  getCuratedLists?: Maybe<HomeScreenCuratedList>;
   /**  Get documentation  */
   getDocumentation?: Maybe<Documentation>;
+  /**  Get a list of featured comics  */
+  getFeaturedComicSeries?: Maybe<HomeScreenComicSeries>;
   /**  Get multiple issues for a comic series  */
   getIssuesForComicSeries?: Maybe<ComicIssueForSeries>;
+  /**  Get details on a List  */
+  getList?: Maybe<List>;
+  /**  Get a list of most popular comics  */
+  getMostPopularComicSeries?: Maybe<HomeScreenComicSeries>;
+  /**  Get a list of recently added comics  */
+  getRecentlyAddedComicSeries?: Maybe<HomeScreenComicSeries>;
+  /**  Get a list of recently updated comics  */
+  getRecentlyUpdatedComicSeries?: Maybe<HomeScreenComicSeries>;
 };
 
 
@@ -844,8 +921,20 @@ export type QueryGetCreatorLinksForSeriesArgs = {
 };
 
 
+export type QueryGetCuratedListsArgs = {
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryGetDocumentationArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetFeaturedComicSeriesArgs = {
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -855,6 +944,29 @@ export type QueryGetIssuesForComicSeriesArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   seriesUuid: Scalars['ID']['input'];
   sortOrder?: InputMaybe<SortOrder>;
+};
+
+
+export type QueryGetListArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMostPopularComicSeriesArgs = {
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetRecentlyAddedComicSeriesArgs = {
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetRecentlyUpdatedComicSeriesArgs = {
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /**  Status of Series  */
@@ -888,7 +1000,7 @@ export type ComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: str
 
 export type MiniComicIssueDetailsFragment = { __typename?: 'ComicIssue', uuid: string, seriesUuid: string, name?: string | null, position?: number | null, thumbnailImageAsString?: string | null, datePublished?: number | null, scopesForExclusiveContent?: Array<string | null> | null, dateExclusiveContentAvailable?: number | null };
 
-export type MiniComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null };
+export type MiniComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null };
 
 export type MiniCreatorDetailsFragment = { __typename?: 'Creator', uuid?: string | null, name?: string | null, shortUrl?: string | null, avatarImageAsString?: string | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null };
 
@@ -926,7 +1038,12 @@ export type GetMiniComicSeriesQueryVariables = Exact<{
 }>;
 
 
-export type GetMiniComicSeriesQuery = { __typename?: 'Query', getComicSeries?: { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null } | null };
+export type GetMiniComicSeriesQuery = { __typename?: 'Query', getComicSeries?: { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null };
+
+export type HomeScreenQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HomeScreenQuery = { __typename?: 'Query', getFeaturedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getCuratedLists?: { __typename?: 'HomeScreenCuratedList', id?: string | null, lists?: Array<{ __typename?: 'List', id: string, name?: string | null, description?: string | null, bannerImageUrl?: string | null, type: ListType, privacyType: PrivacyType } | null> | null } | null, getMostPopularComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getRecentlyAddedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getRecentlyUpdatedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
 
 export const MiniComicIssueDetails = gql`
     fragment miniComicIssueDetails on ComicIssue {
@@ -986,6 +1103,12 @@ export const MiniComicSeriesDetails = gql`
   uuid
   name
   shortUrl
+  coverImageAsString
+  bannerImageAsString
+  thumbnailImageAsString
+  genre0
+  genre1
+  genre2
 }
     `;
 export const MiniCreatorDetails = gql`
@@ -1062,6 +1185,45 @@ export const GetMiniComicSeries = gql`
     query GetMiniComicSeries($uuid: ID, $shortUrl: String) {
   getComicSeries(uuid: $uuid, shortUrl: $shortUrl) {
     ...miniComicSeriesDetails
+  }
+}
+    ${MiniComicSeriesDetails}`;
+export const HomeScreen = gql`
+    query HomeScreen {
+  getFeaturedComicSeries {
+    id
+    comicSeries {
+      ...miniComicSeriesDetails
+    }
+  }
+  getCuratedLists {
+    id
+    lists {
+      id
+      name
+      description
+      bannerImageUrl
+      type
+      privacyType
+    }
+  }
+  getMostPopularComicSeries {
+    id
+    comicSeries {
+      ...miniComicSeriesDetails
+    }
+  }
+  getRecentlyAddedComicSeries {
+    id
+    comicSeries {
+      ...miniComicSeriesDetails
+    }
+  }
+  getRecentlyUpdatedComicSeries {
+    id
+    comicSeries {
+      ...miniComicSeriesDetails
+    }
   }
 }
     ${MiniComicSeriesDetails}`;

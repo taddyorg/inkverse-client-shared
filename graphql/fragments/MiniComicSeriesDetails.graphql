@@ -2,4 +2,10 @@ fragment miniComicSeriesDetails on ComicSeries {
     uuid
     name
     shortUrl
+    coverImageAsString
+    bannerImageAsString
+    thumbnailImageAsString
+    genre0
+    genre1
+    genre2
 } 
