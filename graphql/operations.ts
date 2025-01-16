@@ -443,6 +443,8 @@ export type Creator = {
   avatarImageAsString?: Maybe<Scalars['String']['output']>;
   /**  A short bio on the creator  */
   bio?: Maybe<Scalars['String']['output']>;
+  /**  Comics for the creator  */
+  comics?: Maybe<Array<Maybe<ComicSeries>>>;
   /**  A list of content for this creator  */
   content?: Maybe<Array<Maybe<CreatorContent>>>;
   /**  A hash of the details for all different content a creator makes. It may be useful for you to save this property in your database and compare it to know if there are any new or updated content since the last time you checked  */
@@ -916,8 +918,7 @@ export type QueryGetCreatorContentArgs = {
 
 
 export type QueryGetCreatorLinksForSeriesArgs = {
-  contentType: TaddyType;
-  contentUuid: Scalars['ID']['input'];
+  seriesUuid: Scalars['ID']['input'];
 };
 
 
@@ -998,6 +999,8 @@ export type ComicIssueDetailsFragment = { __typename?: 'ComicIssue', bannerImage
 
 export type ComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: string, name?: string | null, description?: string | null, datePublished?: number | null, hash?: string | null, issuesHash?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, tags?: Array<string | null> | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null, language?: Language | null, contentRating?: ContentRating | null, seriesType?: ComicSeriesType | null, isCompleted?: boolean | null, issueCount?: number | null };
 
+export type CreatorDetailsFragment = { __typename?: 'Creator', uuid?: string | null, name?: string | null, shortUrl?: string | null, bio?: string | null, avatarImageAsString?: string | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null };
+
 export type MiniComicIssueDetailsFragment = { __typename?: 'ComicIssue', uuid: string, seriesUuid: string, name?: string | null, position?: number | null, thumbnailImageAsString?: string | null, datePublished?: number | null, scopesForExclusiveContent?: Array<string | null> | null, dateExclusiveContentAvailable?: number | null };
 
 export type MiniComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null };
@@ -1025,6 +1028,13 @@ export type GetComicSeriesQueryVariables = Exact<{
 
 export type GetComicSeriesQuery = { __typename?: 'Query', getComicSeries?: { __typename?: 'ComicSeries', uuid: string, name?: string | null, description?: string | null, datePublished?: number | null, hash?: string | null, issuesHash?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, tags?: Array<string | null> | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null, language?: Language | null, contentRating?: ContentRating | null, seriesType?: ComicSeriesType | null, isCompleted?: boolean | null, issueCount?: number | null, creators?: Array<{ __typename?: 'Creator', uuid?: string | null, name?: string | null, shortUrl?: string | null, avatarImageAsString?: string | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null } | null> | null } | null, getIssuesForComicSeries?: { __typename?: 'ComicIssueForSeries', seriesUuid: string, issues?: Array<{ __typename?: 'ComicIssue', uuid: string, seriesUuid: string, name?: string | null, position?: number | null, thumbnailImageAsString?: string | null, datePublished?: number | null, scopesForExclusiveContent?: Array<string | null> | null, dateExclusiveContentAvailable?: number | null } | null> | null } | null };
 
+export type GetCreatorQueryVariables = Exact<{
+  uuid: Scalars['ID']['input'];
+}>;
+
+
+export type GetCreatorQuery = { __typename?: 'Query', getCreator?: { __typename?: 'Creator', uuid?: string | null, name?: string | null, shortUrl?: string | null, bio?: string | null, avatarImageAsString?: string | null, comics?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null } | null };
+
 export type GetDocumentationQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -1039,6 +1049,14 @@ export type GetMiniComicSeriesQueryVariables = Exact<{
 
 
 export type GetMiniComicSeriesQuery = { __typename?: 'Query', getComicSeries?: { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null };
+
+export type GetMiniCreatorQueryVariables = Exact<{
+  uuid?: InputMaybe<Scalars['ID']['input']>;
+  shortUrl?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetMiniCreatorQuery = { __typename?: 'Query', getCreator?: { __typename?: 'Creator', uuid?: string | null, name?: string | null, shortUrl?: string | null, avatarImageAsString?: string | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null } | null };
 
 export type HomeScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1096,6 +1114,19 @@ export const ComicSeriesDetails = gql`
   seriesType
   isCompleted
   issueCount
+}
+    `;
+export const CreatorDetails = gql`
+    fragment creatorDetails on Creator {
+  uuid
+  name
+  shortUrl
+  bio
+  avatarImageAsString
+  links {
+    url
+    type
+  }
 }
     `;
 export const MiniComicSeriesDetails = gql`
@@ -1173,6 +1204,17 @@ export const GetComicSeries = gql`
     ${ComicSeriesDetails}
 ${MiniCreatorDetails}
 ${MiniComicIssueDetails}`;
+export const GetCreator = gql`
+    query GetCreator($uuid: ID!) {
+  getCreator(uuid: $uuid) {
+    ...creatorDetails
+    comics {
+      ...miniComicSeriesDetails
+    }
+  }
+}
+    ${CreatorDetails}
+${MiniComicSeriesDetails}`;
 export const GetDocumentation = gql`
     query GetDocumentation($id: ID!) {
   getDocumentation(id: $id) {
@@ -1188,6 +1230,13 @@ export const GetMiniComicSeries = gql`
   }
 }
     ${MiniComicSeriesDetails}`;
+export const GetMiniCreator = gql`
+    query GetMiniCreator($uuid: ID, $shortUrl: String) {
+  getCreator(uuid: $uuid, shortUrl: $shortUrl) {
+    ...miniCreatorDetails
+  }
+}
+    ${MiniCreatorDetails}`;
 export const HomeScreen = gql`
     query HomeScreen {
   getFeaturedComicSeries {

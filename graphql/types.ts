@@ -444,6 +444,8 @@ export type Creator = {
   avatarImageAsString?: Maybe<Scalars['String']['output']>;
   /**  A short bio on the creator  */
   bio?: Maybe<Scalars['String']['output']>;
+  /**  Comics for the creator  */
+  comics?: Maybe<Array<Maybe<ComicSeries>>>;
   /**  A list of content for this creator  */
   content?: Maybe<Array<Maybe<CreatorContent>>>;
   /**  A hash of the details for all different content a creator makes. It may be useful for you to save this property in your database and compare it to know if there are any new or updated content since the last time you checked  */
@@ -917,8 +919,7 @@ export type QueryGetCreatorContentArgs = {
 
 
 export type QueryGetCreatorLinksForSeriesArgs = {
-  contentType: TaddyType;
-  contentUuid: Scalars['ID']['input'];
+  seriesUuid: Scalars['ID']['input'];
 };
 
 
@@ -1197,6 +1198,7 @@ export type ComicStoryResolvers<ContextType = any, ParentType extends ResolversP
 export type CreatorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Creator'] = ResolversParentTypes['Creator']> = ResolversObject<{
   avatarImageAsString?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  comics?: Resolver<Maybe<Array<Maybe<ResolversTypes['ComicSeries']>>>, ParentType, ContextType>;
   content?: Resolver<Maybe<Array<Maybe<ResolversTypes['CreatorContent']>>>, ParentType, ContextType, Partial<CreatorContentArgs>>;
   contentHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   copyright?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1283,7 +1285,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getComicStory?: Resolver<Maybe<ResolversTypes['ComicStory']>, ParentType, ContextType, Partial<QueryGetComicStoryArgs>>;
   getCreator?: Resolver<Maybe<ResolversTypes['Creator']>, ParentType, ContextType, Partial<QueryGetCreatorArgs>>;
   getCreatorContent?: Resolver<Maybe<ResolversTypes['CreatorContent']>, ParentType, ContextType, Partial<QueryGetCreatorContentArgs>>;
-  getCreatorLinksForSeries?: Resolver<Maybe<Array<Maybe<ResolversTypes['CreatorLinkDetails']>>>, ParentType, ContextType, RequireFields<QueryGetCreatorLinksForSeriesArgs, 'contentType' | 'contentUuid'>>;
+  getCreatorLinksForSeries?: Resolver<Maybe<Array<Maybe<ResolversTypes['CreatorLinkDetails']>>>, ParentType, ContextType, RequireFields<QueryGetCreatorLinksForSeriesArgs, 'seriesUuid'>>;
   getCuratedLists?: Resolver<Maybe<ResolversTypes['HomeScreenCuratedList']>, ParentType, ContextType, Partial<QueryGetCuratedListsArgs>>;
   getDocumentation?: Resolver<Maybe<ResolversTypes['Documentation']>, ParentType, ContextType, RequireFields<QueryGetDocumentationArgs, 'id'>>;
   getFeaturedComicSeries?: Resolver<Maybe<ResolversTypes['HomeScreenComicSeries']>, ParentType, ContextType, Partial<QueryGetFeaturedComicSeriesArgs>>;
