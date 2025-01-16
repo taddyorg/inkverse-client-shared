@@ -1001,6 +1001,8 @@ export type ComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: str
 
 export type CreatorDetailsFragment = { __typename?: 'Creator', uuid?: string | null, name?: string | null, shortUrl?: string | null, bio?: string | null, avatarImageAsString?: string | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null };
 
+export type ListDetailsFragment = { __typename?: 'List', id: string, name?: string | null, description?: string | null, bannerImageUrl?: string | null, type: ListType, privacyType: PrivacyType, userId: string, comicSeries?: Array<{ __typename?: 'ComicSeries', description?: string | null, uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null };
+
 export type MiniComicIssueDetailsFragment = { __typename?: 'ComicIssue', uuid: string, seriesUuid: string, name?: string | null, position?: number | null, thumbnailImageAsString?: string | null, datePublished?: number | null, scopesForExclusiveContent?: Array<string | null> | null, dateExclusiveContentAvailable?: number | null };
 
 export type MiniComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null };
@@ -1041,6 +1043,13 @@ export type GetDocumentationQueryVariables = Exact<{
 
 
 export type GetDocumentationQuery = { __typename?: 'Query', getDocumentation?: { __typename?: 'Documentation', id?: string | null, text?: string | null } | null };
+
+export type GetListQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetListQuery = { __typename?: 'Query', getList?: { __typename?: 'List', id: string, name?: string | null, description?: string | null, bannerImageUrl?: string | null, type: ListType, privacyType: PrivacyType, userId: string, comicSeries?: Array<{ __typename?: 'ComicSeries', description?: string | null, uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
 
 export type GetMiniComicSeriesQueryVariables = Exact<{
   uuid?: InputMaybe<Scalars['ID']['input']>;
@@ -1142,6 +1151,21 @@ export const MiniComicSeriesDetails = gql`
   genre2
 }
     `;
+export const ListDetails = gql`
+    fragment listDetails on List {
+  id
+  name
+  description
+  bannerImageUrl
+  type
+  privacyType
+  userId
+  comicSeries {
+    ...miniComicSeriesDetails
+    description
+  }
+}
+    ${MiniComicSeriesDetails}`;
 export const MiniCreatorDetails = gql`
     fragment miniCreatorDetails on Creator {
   uuid
@@ -1223,6 +1247,13 @@ export const GetDocumentation = gql`
   }
 }
     `;
+export const GetList = gql`
+    query GetList($id: ID!) {
+  getList(id: $id) {
+    ...listDetails
+  }
+}
+    ${ListDetails}`;
 export const GetMiniComicSeries = gql`
     query GetMiniComicSeries($uuid: ID, $shortUrl: String) {
   getComicSeries(uuid: $uuid, shortUrl: $shortUrl) {
