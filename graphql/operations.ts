@@ -885,6 +885,8 @@ export type Query = {
   getRecentlyAddedComicSeries?: Maybe<HomeScreenComicSeries>;
   /**  Get a list of recently updated comics  */
   getRecentlyUpdatedComicSeries?: Maybe<HomeScreenComicSeries>;
+  /**  Search for a term  */
+  searchForTerm?: Maybe<SearchResults>;
 };
 
 
@@ -968,6 +970,25 @@ export type QueryGetRecentlyAddedComicSeriesArgs = {
 export type QueryGetRecentlyUpdatedComicSeriesArgs = {
   limitPerPage?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerySearchForTermArgs = {
+  filterForTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  term?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**  A search result  */
+export type SearchResults = {
+  __typename?: 'SearchResults';
+  /**  A list of ComicSeries items  */
+  comicSeries?: Maybe<Array<Maybe<ComicSeries>>>;
+  /**  A list of Creator items  */
+  creators?: Maybe<Array<Maybe<Creator>>>;
+  /**  Identifier for the search query being sent  */
+  searchId: Scalars['ID']['output'];
 };
 
 /**  Status of Series  */
@@ -1071,6 +1092,16 @@ export type HomeScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type HomeScreenQuery = { __typename?: 'Query', getFeaturedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getCuratedLists?: { __typename?: 'HomeScreenCuratedList', id?: string | null, lists?: Array<{ __typename?: 'List', id: string, name?: string | null, description?: string | null, bannerImageUrl?: string | null, type: ListType, privacyType: PrivacyType } | null> | null } | null, getMostPopularComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getRecentlyAddedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getRecentlyUpdatedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
+
+export type SearchQueryVariables = Exact<{
+  term: Scalars['String']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  filterForTypes?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type SearchQuery = { __typename?: 'Query', searchForTerm?: { __typename?: 'SearchResults', searchId: string, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
 
 export const MiniComicIssueDetails = gql`
     fragment miniComicIssueDetails on ComicIssue {
@@ -1301,6 +1332,21 @@ export const HomeScreen = gql`
   }
   getRecentlyUpdatedComicSeries {
     id
+    comicSeries {
+      ...miniComicSeriesDetails
+    }
+  }
+}
+    ${MiniComicSeriesDetails}`;
+export const Search = gql`
+    query Search($term: String!, $page: Int, $limitPerPage: Int, $filterForTypes: [String!]) {
+  searchForTerm(
+    term: $term
+    page: $page
+    limitPerPage: $limitPerPage
+    filterForTypes: $filterForTypes
+  ) {
+    searchId
     comicSeries {
       ...miniComicSeriesDetails
     }

@@ -886,6 +886,8 @@ export type Query = {
   getRecentlyAddedComicSeries?: Maybe<HomeScreenComicSeries>;
   /**  Get a list of recently updated comics  */
   getRecentlyUpdatedComicSeries?: Maybe<HomeScreenComicSeries>;
+  /**  Search for a term  */
+  searchForTerm?: Maybe<SearchResults>;
 };
 
 
@@ -969,6 +971,25 @@ export type QueryGetRecentlyAddedComicSeriesArgs = {
 export type QueryGetRecentlyUpdatedComicSeriesArgs = {
   limitPerPage?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerySearchForTermArgs = {
+  filterForTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  limitPerPage?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  term?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**  A search result  */
+export type SearchResults = {
+  __typename?: 'SearchResults';
+  /**  A list of ComicSeries items  */
+  comicSeries?: Maybe<Array<Maybe<ComicSeries>>>;
+  /**  A list of Creator items  */
+  creators?: Maybe<Array<Maybe<Creator>>>;
+  /**  Identifier for the search query being sent  */
+  searchId: Scalars['ID']['output'];
 };
 
 /**  Status of Series  */
@@ -1094,6 +1115,7 @@ export type ResolversTypes = ResolversObject<{
   ListType: ListType;
   PrivacyType: PrivacyType;
   Query: ResolverTypeWrapper<{}>;
+  SearchResults: ResolverTypeWrapper<SearchResults>;
   SeriesStatus: SeriesStatus;
   SortOrder: SortOrder;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -1118,6 +1140,7 @@ export type ResolversParentTypes = ResolversObject<{
   LinkDetails: LinkDetails;
   List: List;
   Query: {};
+  SearchResults: SearchResults;
   String: Scalars['String']['output'];
 }>;
 
@@ -1294,6 +1317,14 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getMostPopularComicSeries?: Resolver<Maybe<ResolversTypes['HomeScreenComicSeries']>, ParentType, ContextType, Partial<QueryGetMostPopularComicSeriesArgs>>;
   getRecentlyAddedComicSeries?: Resolver<Maybe<ResolversTypes['HomeScreenComicSeries']>, ParentType, ContextType, Partial<QueryGetRecentlyAddedComicSeriesArgs>>;
   getRecentlyUpdatedComicSeries?: Resolver<Maybe<ResolversTypes['HomeScreenComicSeries']>, ParentType, ContextType, Partial<QueryGetRecentlyUpdatedComicSeriesArgs>>;
+  searchForTerm?: Resolver<Maybe<ResolversTypes['SearchResults']>, ParentType, ContextType, Partial<QuerySearchForTermArgs>>;
+}>;
+
+export type SearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchResults'] = ResolversParentTypes['SearchResults']> = ResolversObject<{
+  comicSeries?: Resolver<Maybe<Array<Maybe<ResolversTypes['ComicSeries']>>>, ParentType, ContextType>;
+  creators?: Resolver<Maybe<Array<Maybe<ResolversTypes['Creator']>>>, ParentType, ContextType>;
+  searchId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
@@ -1310,5 +1341,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   LinkDetails?: LinkDetailsResolvers<ContextType>;
   List?: ListResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SearchResults?: SearchResultsResolvers<ContextType>;
 }>;
 
