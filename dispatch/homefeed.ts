@@ -1,7 +1,5 @@
-import gql from 'graphql-tag';
-
-import { asyncAction, ActionTypes, errorHandlerFactory, Dispatch, Action } from './utils';
-import { publicClient } from '../../lib/apollo';
+import type { ApolloClient, ApolloQueryResult } from '@apollo/client';
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils';
 import { HomeScreen, type ComicSeries, type HomeScreenQuery, type List } from "@/shared/graphql/operations";
 
 /* Actions */
@@ -9,40 +7,54 @@ export const GET_HOMESCREEN = asyncAction(ActionTypes.GET_HOMEFEED);
 
 /* Action Creators */
 interface GetHomeScreenProps {
+  publicClient: ApolloClient<any>;
   forceRefresh?: boolean;
 }
 
-export function loadHomeScreen({ forceRefresh = false }: GetHomeScreenProps, dispatch: Dispatch) {
+export function loadHomeScreen({ publicClient, forceRefresh = false }: GetHomeScreenProps, dispatch: Dispatch) {
   dispatch(GET_HOMESCREEN.request());
 
-  return publicClient
-    .query({
+  return publicClient.query<HomeScreenQuery>({
       query: HomeScreen,
       ...(!!forceRefresh && { fetchPolicy: 'network-only' })
-    })
-    .then((result) => {
-      if (!result.data) {
-        throw new Error('No data returned from HomeScreen query');
-      }
-
-      const data = {
-        featuredComicSeries: selectRandomFeaturedSeries(result.data.getFeaturedComicSeries?.comicSeries),
-        curatedLists: result.data.getCuratedLists?.lists?.filter(Boolean) || [],
-        mostPopularComicSeries: shuffleAndLimitMostPopular(result.data.getMostPopularComicSeries?.comicSeries),
-        recentlyAddedComicSeries: result.data.getRecentlyAddedComicSeries?.comicSeries?.filter(Boolean) || [],
-        recentlyUpdatedComicSeries: result.data.getRecentlyUpdatedComicSeries?.comicSeries?.filter(Boolean) || [],
-      };
-
+    }).then((result: ApolloQueryResult<HomeScreenQuery>) => {
+      const data = parseLoaderHomeScreen(result?.data);
       dispatch(GET_HOMESCREEN.success(data));
     })
     .catch(errorHandlerFactory(dispatch, GET_HOMESCREEN));
 }
 
-/* Helper Functions */
-function selectRandomFeaturedSeries(series: ComicSeries[] | null | undefined) {
-  if (!series?.length) return [];
-  const randomIndex = Math.floor(Math.random() * series.length);
-  return [series[randomIndex]];
+export type HomeScreenLoaderData = {
+  featuredComicSeries: ComicSeries[] | null | undefined;
+  curatedLists: List[] | null | undefined;
+  mostPopularComicSeries: ComicSeries[] | null | undefined;
+  recentlyAddedComicSeries: ComicSeries[] | null | undefined;
+  recentlyUpdatedComicSeries: ComicSeries[] | null | undefined;
+  apolloState?: Record<string, any>;
+};
+
+export function parseLoaderHomeScreen(data: HomeScreenQuery): HomeScreenLoaderData {
+  const featuredSeries = data.getFeaturedComicSeries?.comicSeries?.filter(
+    (series): series is ComicSeries => series !== null
+  );
+
+  const randomFeaturedSeries = featuredSeries?.length 
+    ? [featuredSeries[Math.floor(Math.random() * featuredSeries.length)]]
+    : [];
+
+  const mostPopularSeries = data.getMostPopularComicSeries?.comicSeries?.filter(
+    (series): series is ComicSeries => series !== null
+  );
+
+  return {
+    featuredComicSeries: randomFeaturedSeries,
+    curatedLists: data.getCuratedLists?.lists?.filter((list): list is List => list !== null) || [],
+    mostPopularComicSeries: shuffleAndLimitMostPopular(mostPopularSeries),
+    recentlyAddedComicSeries: data.getRecentlyAddedComicSeries?.comicSeries?.filter(
+      (series): series is ComicSeries => series !== null) || [],
+    recentlyUpdatedComicSeries: data.getRecentlyUpdatedComicSeries?.comicSeries?.filter(
+      (series): series is ComicSeries => series !== null) || [],
+  };
 }
 
 function shuffleAndLimitMostPopular(series: ComicSeries[] | null | undefined, limit = 6) {
