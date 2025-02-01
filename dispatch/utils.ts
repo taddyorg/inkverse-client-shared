@@ -4,7 +4,7 @@ export enum ActionTypes {
 
 export type Dispatch = (action: Action | { type: string; payload?: any }) => void;
 
-interface AsyncActionCreators {
+export interface AsyncActionCreators {
   REQUEST: string;
   SUCCESS: string;
   FAILURE: string;

@@ -24,15 +24,6 @@ export function loadHomeScreen({ publicClient, forceRefresh = false }: GetHomeSc
     .catch(errorHandlerFactory(dispatch, GET_HOMESCREEN));
 }
 
-export type HomeScreenLoaderData = {
-  featuredComicSeries: ComicSeries[] | null | undefined;
-  curatedLists: List[] | null | undefined;
-  mostPopularComicSeries: ComicSeries[] | null | undefined;
-  recentlyAddedComicSeries: ComicSeries[] | null | undefined;
-  recentlyUpdatedComicSeries: ComicSeries[] | null | undefined;
-  apolloState?: Record<string, any>;
-};
-
 export function parseLoaderHomeScreen(data: HomeScreenQuery): HomeScreenLoaderData {
   const featuredSeries = data.getFeaturedComicSeries?.comicSeries?.filter(
     (series): series is ComicSeries => series !== null
@@ -47,6 +38,7 @@ export function parseLoaderHomeScreen(data: HomeScreenQuery): HomeScreenLoaderDa
   );
 
   return {
+    isHomeScreenLoading: false,
     featuredComicSeries: randomFeaturedSeries,
     curatedLists: data.getCuratedLists?.lists?.filter((list): list is List => list !== null) || [],
     mostPopularComicSeries: shuffleAndLimitMostPopular(mostPopularSeries),
@@ -65,8 +57,27 @@ function shuffleAndLimitMostPopular(series: ComicSeries[] | null | undefined, li
     .slice(0, limit);
 }
 
+export type HomeScreenLoaderData = {
+  isHomeScreenLoading: boolean;
+  featuredComicSeries: ComicSeries[] | null | undefined;
+  curatedLists: List[] | null | undefined;
+  mostPopularComicSeries: ComicSeries[] | null | undefined;
+  recentlyAddedComicSeries: ComicSeries[] | null | undefined;
+  recentlyUpdatedComicSeries: ComicSeries[] | null | undefined;
+  apolloState?: Record<string, any>;
+};
+
+export const homeScreenInitialState: HomeScreenLoaderData = {
+  isHomeScreenLoading: false,
+  featuredComicSeries: [],
+  curatedLists: [],
+  mostPopularComicSeries: [],
+  recentlyAddedComicSeries: [],
+  recentlyUpdatedComicSeries: [],
+}
+
 /* Reducers */
-export function homefeedQueryReducerDefault(state = {}, action: Action) {
+export function homefeedQueryReducerDefault(state = homeScreenInitialState, action: Action): HomeScreenLoaderData {
   switch (action.type) {
     case GET_HOMESCREEN.REQUEST:
       return {
@@ -84,4 +95,4 @@ export function homefeedQueryReducerDefault(state = {}, action: Action) {
   }
 }
 
-export const homefeedQueryReducer = (state: any, action: Action) => homefeedQueryReducerDefault(state, action);
+export const homefeedQueryReducer = (state: HomeScreenLoaderData, action: Action) => homefeedQueryReducerDefault(state, action);
