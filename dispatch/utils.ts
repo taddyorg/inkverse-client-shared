@@ -1,5 +1,6 @@
 export enum ActionTypes {
   GET_HOMEFEED = 'GET_HOMEFEED',
+  GET_COMICSERIES = 'GET_COMICSERIES',
 }
 
 export type Dispatch = (action: Action | { type: string; payload?: any }) => void;
@@ -67,8 +68,8 @@ export function errorHandlerFactory(
   dispatch: (action: Action | ErrorAction) => void,
   action: AsyncActionCreators,
 ) {
-  return (error: Error) => {
+  return (error: Error | unknown) => {
     dispatch(action.failure(error));
-    console.error('Error:', error, '\nAction:', action);
+    console.error('Error:', error);
   };
 }

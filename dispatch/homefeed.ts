@@ -11,17 +11,20 @@ interface GetHomeScreenProps {
   forceRefresh?: boolean;
 }
 
-export function loadHomeScreen({ publicClient, forceRefresh = false }: GetHomeScreenProps, dispatch: Dispatch) {
+export async function loadHomeScreen({ publicClient, forceRefresh = false }: GetHomeScreenProps, dispatch: Dispatch) {
   dispatch(GET_HOMESCREEN.request());
 
-  return publicClient.query<HomeScreenQuery>({
+  try {
+    const result = await publicClient.query<HomeScreenQuery>({
       query: HomeScreen,
       ...(!!forceRefresh && { fetchPolicy: 'network-only' })
-    }).then((result: ApolloQueryResult<HomeScreenQuery>) => {
-      const data = parseLoaderHomeScreen(result?.data);
-      dispatch(GET_HOMESCREEN.success(data));
-    })
-    .catch(errorHandlerFactory(dispatch, GET_HOMESCREEN));
+    });
+    
+    const data = parseLoaderHomeScreen(result?.data);
+    dispatch(GET_HOMESCREEN.success(data));
+  } catch (error: Error | unknown) {
+    errorHandlerFactory(dispatch, GET_HOMESCREEN)(error);
+  }
 }
 
 export function parseLoaderHomeScreen(data: HomeScreenQuery): HomeScreenLoaderData {
