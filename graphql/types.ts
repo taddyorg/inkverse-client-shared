@@ -475,7 +475,7 @@ export type Creator = {
   /**  Tags for the creator  */
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   /**  Unique identifier for this creator  */
-  uuid?: Maybe<Scalars['ID']['output']>;
+  uuid: Scalars['ID']['output'];
 };
 
 
@@ -1236,7 +1236,7 @@ export type CreatorResolvers<ContextType = any, ParentType extends ResolversPare
   sssOwnerPublicEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sssUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  uuid?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  uuid?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
