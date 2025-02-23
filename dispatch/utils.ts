@@ -1,6 +1,7 @@
 export enum ActionTypes {
   GET_HOMEFEED = 'GET_HOMEFEED',
   GET_COMICSERIES = 'GET_COMICSERIES',
+  GET_COMICISSUE = 'GET_COMICISSUE',
 }
 
 export type Dispatch = (action: Action | { type: string; payload?: any }) => void;
