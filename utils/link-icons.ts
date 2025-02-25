@@ -24,7 +24,7 @@ export const linkIconNames: Record<LinkType, string> = {
   [LinkType.VIMEO]: "vimeo",
   [LinkType.WECHAT]: "wechat",
   [LinkType.WHATSAPP]: "whatsapp",
-  [LinkType.KO_FI]: "kofi",
+  [LinkType.KO_FI]: "kofi-2",
   [LinkType.LINKTREE]: "linktree-1",
   [LinkType.ETSY]: "etsy",
 };
