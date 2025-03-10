@@ -1,9 +1,12 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import appConfig from '../../config.js';
+
+const serverUrl = process.env.NODE_ENV === 'production' 
+  ? "https://api-v2.inkverse.co" 
+  : "http://inkverse.test:3010/api/graphql"
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: appConfig.SERVER_URL,
+  schema: serverUrl,
   documents: "shared/graphql/**/*.graphql",
   generates: {
     "shared/graphql/types.ts": {
