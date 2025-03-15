@@ -15,6 +15,7 @@ interface SearchProps {
   filterForTypes?: string[];
   filterForTags?: string[];
   filterForGenres?: Genre[];
+  isLoadingMore?: boolean;
   forceRefresh?: boolean;
 }
 
@@ -26,9 +27,13 @@ export async function searchComics({
   filterForTypes = ["COMICSERIES"],
   filterForTags,
   filterForGenres,
-  forceRefresh = false 
+  isLoadingMore = false,
+  forceRefresh = false,
 }: SearchProps, dispatch: Dispatch) {
-  dispatch(SEARCH.request());
+  dispatch(SEARCH.request({ page, isLoadingMore }));
+
+  //add a small delay to prevent rapid consecutive requests
+  // await new Promise(resolve => setTimeout(resolve, 3000));
 
   try {
     // Execute the search query
@@ -51,7 +56,7 @@ export async function searchComics({
 
     const parsedData = parseSearchResults(searchResult.data);
 
-    dispatch(SEARCH.success(parsedData));
+    dispatch(SEARCH.success(parsedData, { page }));
   } catch (error: Error | unknown) {
     errorHandlerFactory(dispatch, SEARCH)(error);
   }
@@ -60,6 +65,7 @@ export async function searchComics({
 export function parseSearchResults(data: SearchQuery): SearchLoaderData {
   return {
     isSearchLoading: false,
+    isLoadingMore: false,
     searchResults: data.search?.comicSeries?.filter(Boolean) as ComicSeries[] || [],
     searchId: data.search?.searchId || '',
   };
@@ -67,6 +73,7 @@ export function parseSearchResults(data: SearchQuery): SearchLoaderData {
 
 export type SearchLoaderData = {
   isSearchLoading: boolean;
+  isLoadingMore: boolean;
   searchResults: ComicSeries[];
   searchId: string;
   apolloState?: Record<string, any>;
@@ -74,6 +81,7 @@ export type SearchLoaderData = {
 
 export const searchInitialState: SearchLoaderData = {
   isSearchLoading: false,
+  isLoadingMore: false,
   searchResults: [],
   searchId: '',
 }
@@ -85,16 +93,48 @@ export function searchQueryReducerDefault(state = searchInitialState, action: Ac
       return {
         ...state,
         isSearchLoading: true,
+        isLoadingMore: action.payload?.isLoadingMore || false,
       };
+      
     case SEARCH.SUCCESS:
+      const isPaginationRequest = action.meta?.page && action.meta.page > 1;
+
+      if (isPaginationRequest) {
+        // For pagination, append new results to existing ones
+        return {
+          ...state,
+          ...action.payload,
+          searchResults: mergeSearchResults(state.searchResults, action.payload.searchResults),
+          isSearchLoading: false,
+          isLoadingMore: false,
+        };
+      } 
+      
+      // For new searches, replace the results
       return {
         ...state,
         ...action.payload,
         isSearchLoading: false,
+        isLoadingMore: false,
       };
+      
+    case SEARCH.FAILURE:
+      return {
+        ...state,
+        isSearchLoading: false,
+        isLoadingMore: false,
+      };
+      
     default:
       return state;
   }
+}
+
+// Helper function to merge search results while avoiding duplicates
+function mergeSearchResults(existingResults: ComicSeries[], newResults: ComicSeries[]): ComicSeries[] {
+  const existingUuids = new Set(existingResults.map(item => item.uuid));
+  const uniqueNewResults = newResults.filter(item => !existingUuids.has(item.uuid));
+  return [...existingResults, ...uniqueNewResults];
 }
 
 export const searchQueryReducer = (state: SearchLoaderData, action: Action) => searchQueryReducerDefault(state, action); 
