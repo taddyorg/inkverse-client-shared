@@ -886,7 +886,7 @@ export type Query = {
   /**  Get a list of recently updated comics  */
   getRecentlyUpdatedComicSeries?: Maybe<HomeScreenComicSeries>;
   /**  Search for a term  */
-  searchForTerm?: Maybe<SearchResults>;
+  search?: Maybe<SearchResults>;
 };
 
 
@@ -973,7 +973,9 @@ export type QueryGetRecentlyUpdatedComicSeriesArgs = {
 };
 
 
-export type QuerySearchForTermArgs = {
+export type QuerySearchArgs = {
+  filterForGenres?: InputMaybe<Array<InputMaybe<Genre>>>;
+  filterForTags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   filterForTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   limitPerPage?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1097,11 +1099,13 @@ export type SearchQueryVariables = Exact<{
   term: Scalars['String']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
   limitPerPage?: InputMaybe<Scalars['Int']['input']>;
-  filterForTypes?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+  filterForTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+  filterForTags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+  filterForGenres?: InputMaybe<Array<InputMaybe<Genre>> | InputMaybe<Genre>>;
 }>;
 
 
-export type SearchQuery = { __typename?: 'Query', searchForTerm?: { __typename?: 'SearchResults', searchId: string, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
+export type SearchQuery = { __typename?: 'Query', search?: { __typename?: 'SearchResults', searchId: string, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
 
 export const MiniComicIssueDetails = gql`
     fragment miniComicIssueDetails on ComicIssue {
@@ -1339,12 +1343,14 @@ export const HomeScreen = gql`
 }
     ${MiniComicSeriesDetails}`;
 export const Search = gql`
-    query Search($term: String!, $page: Int, $limitPerPage: Int, $filterForTypes: [String!]) {
-  searchForTerm(
+    query Search($term: String!, $page: Int, $limitPerPage: Int, $filterForTypes: [String], $filterForTags: [String], $filterForGenres: [Genre]) {
+  search(
     term: $term
     page: $page
     limitPerPage: $limitPerPage
     filterForTypes: $filterForTypes
+    filterForTags: $filterForTags
+    filterForGenres: $filterForGenres
   ) {
     searchId
     comicSeries {

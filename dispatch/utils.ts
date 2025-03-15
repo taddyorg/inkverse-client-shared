@@ -3,6 +3,7 @@ export enum ActionTypes {
   GET_COMICSERIES = 'GET_COMICSERIES',
   GET_COMICISSUE = 'GET_COMICISSUE',
   GET_CREATOR = 'GET_CREATOR',
+  GET_LIST = 'GET_LIST'
 }
 
 export type Dispatch = (action: Action | { type: string; payload?: any }) => void;
