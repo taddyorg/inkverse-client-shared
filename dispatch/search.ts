@@ -1,10 +1,11 @@
 import type { ApolloClient } from '@apollo/client';
-import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils';
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action, mergeItemsWithUuid } from './utils';
 import { type SearchQuery, type SearchQueryVariables, Search } from "@/shared/graphql/operations";
 import type { ComicSeries, Genre } from "@/shared/graphql/types";
 
 /* Actions */
 export const SEARCH = asyncAction(ActionTypes.SEARCH);
+export const SEARCH_DEBOUNCED = 'SEARCH_DEBOUNCED'; // New action type for debounced search
 
 /* Action Creators */
 interface SearchProps {
@@ -19,6 +20,27 @@ interface SearchProps {
   forceRefresh?: boolean;
 }
 
+// Debounce utility
+let searchDebounceTimer: NodeJS.Timeout | null = null;
+
+// Debounced search function that shows loading state immediately
+export function debouncedSearchComics(props: SearchProps, dispatch: Dispatch, debounceMs: number = 300) {
+  const { isLoadingMore = false, page = 1 } = props;
+  
+  // Dispatch loading state immediately
+  dispatch(SEARCH.request({ page, isLoadingMore }));
+  
+  // Clear any existing timer
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer);
+  }
+  
+  // Set a new timer for the actual API call
+  searchDebounceTimer = setTimeout(() => {
+    searchComics(props, dispatch);
+  }, debounceMs);
+}
+
 export async function searchComics({ 
   publicClient, 
   term, 
@@ -30,9 +52,13 @@ export async function searchComics({
   isLoadingMore = false,
   forceRefresh = false,
 }: SearchProps, dispatch: Dispatch) {
-  dispatch(SEARCH.request({ page, isLoadingMore }));
+  // We don't need to dispatch request here anymore since it's done in debouncedSearchComics
+  // Only dispatch if this function is called directly
+  if (!searchDebounceTimer) {
+    dispatch(SEARCH.request({ page, isLoadingMore }));
+  }
 
-  //add a small delay to prevent rapid consecutive requests
+  // add a small delay to test the loading state
   // await new Promise(resolve => setTimeout(resolve, 3000));
 
   try {
@@ -90,21 +116,26 @@ export const searchInitialState: SearchLoaderData = {
 export function searchQueryReducerDefault(state = searchInitialState, action: Action): SearchLoaderData {
   switch (action.type) {
     case SEARCH.REQUEST:
-      return {
-        ...state,
-        isSearchLoading: true,
-        isLoadingMore: action.payload?.isLoadingMore || false,
-      };
+
+    const isLoadingMore = !!action.payload?.isLoadingMore;
+
+    return {
+      ...state,
+      isSearchLoading: !isLoadingMore,
+      isLoadingMore: isLoadingMore,
+    };
       
     case SEARCH.SUCCESS:
       const isPaginationRequest = action.meta?.page && action.meta.page > 1;
 
+      console.log('action.payload', action.payload);
+
+      // For pagination, append new results to existing ones
       if (isPaginationRequest) {
-        // For pagination, append new results to existing ones
         return {
           ...state,
           ...action.payload,
-          searchResults: mergeSearchResults(state.searchResults, action.payload.searchResults),
+          searchResults: mergeItemsWithUuid(state.searchResults, action.payload.searchResults),
           isSearchLoading: false,
           isLoadingMore: false,
         };
@@ -128,13 +159,6 @@ export function searchQueryReducerDefault(state = searchInitialState, action: Ac
     default:
       return state;
   }
-}
-
-// Helper function to merge search results while avoiding duplicates
-function mergeSearchResults(existingResults: ComicSeries[], newResults: ComicSeries[]): ComicSeries[] {
-  const existingUuids = new Set(existingResults.map(item => item.uuid));
-  const uniqueNewResults = newResults.filter(item => !existingUuids.has(item.uuid));
-  return [...existingResults, ...uniqueNewResults];
 }
 
 export const searchQueryReducer = (state: SearchLoaderData, action: Action) => searchQueryReducerDefault(state, action); 

@@ -4,7 +4,7 @@ export enum ActionTypes {
   GET_COMICISSUE = 'GET_COMICISSUE',
   GET_CREATOR = 'GET_CREATOR',
   GET_LIST = 'GET_LIST',
-  SEARCH = 'SEARCH'
+  SEARCH = 'SEARCH',
 }
 
 export type Dispatch = (action: Action | { type: string; payload?: any }) => void;
@@ -76,4 +76,10 @@ export function errorHandlerFactory(
     dispatch(action.failure(error));
     console.error('Error:', error);
   };
+}
+
+export function mergeItemsWithUuid<T extends { uuid: string }>(existingItems: T[], newItems: T[]): T[] {
+  const existingUuids = new Set(existingItems.map(item => item.uuid));
+  const uniqueNewItems = newItems.filter(item => !existingUuids.has(item.uuid));
+  return [...existingItems, ...uniqueNewItems];
 }
