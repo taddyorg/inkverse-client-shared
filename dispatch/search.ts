@@ -65,7 +65,7 @@ export async function searchComics({
   dispatch(SEARCH.request({ page, isLoadingMore, requestId: searchRequestId }));
 
   // add a small delay to test the loading state
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  // await new Promise(resolve => setTimeout(resolve, 3000));
 
   try {
     // Execute the search query
