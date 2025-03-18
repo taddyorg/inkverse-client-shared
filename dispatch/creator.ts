@@ -1,6 +1,6 @@
 import { ApolloClient } from '@apollo/client';
-import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils';
-import { GetCreator, type GetCreatorQuery, type Creator, type ComicSeries } from '@/shared/graphql/operations';
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.ts';
+import { GetCreator, type GetCreatorQuery, type Creator, type ComicSeries } from '@/shared/graphql/operations.ts';
 
 /* Actions */
 export const GET_CREATOR = asyncAction(ActionTypes.GET_CREATOR);

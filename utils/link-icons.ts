@@ -1,4 +1,4 @@
-import { LinkType } from "@/shared/graphql/operations";
+import { LinkType } from "@/shared/graphql/operations.ts";
 
 export const linkIconNames: Record<LinkType, string> = {
   [LinkType.INSTAGRAM]: "instagram",

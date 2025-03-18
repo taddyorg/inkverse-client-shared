@@ -1,6 +1,6 @@
 import type { ApolloClient } from '@apollo/client';
-import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils';
-import { type GetComicIssueQuery, type GetComicIssueQueryVariables, SortOrder, GetComicIssue, ComicIssue, ComicSeries } from "@/shared/graphql/operations";
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.ts';
+import { type GetComicIssueQuery, type GetComicIssueQueryVariables, SortOrder, GetComicIssue, ComicIssue, ComicSeries } from "@/shared/graphql/operations.ts";
 
 /* Actions */
 export const GET_COMICISSUE = asyncAction(ActionTypes.GET_COMICISSUE);

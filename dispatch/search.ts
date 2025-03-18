@@ -1,7 +1,7 @@
 import type { ApolloClient } from '@apollo/client';
-import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action, mergeItemsWithUuid } from './utils';
-import { type SearchQuery, type SearchQueryVariables, Search } from "@/shared/graphql/operations";
-import type { ComicSeries, Genre } from "@/shared/graphql/types";
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action, mergeItemsWithUuid } from './utils.ts';
+import { type SearchQuery, type SearchQueryVariables, Search } from "@/shared/graphql/operations.ts";
+import type { ComicSeries, Genre } from "@/shared/graphql/types.ts";
 
 /* Actions */
 export const SEARCH = asyncAction(ActionTypes.SEARCH);
