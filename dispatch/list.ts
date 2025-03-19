@@ -1,7 +1,7 @@
 import type { ApolloClient } from '@apollo/client';
-import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.ts';
-import { type GetListQuery, type GetListQueryVariables, GetList } from "@/shared/graphql/operations.ts";
-import type { List } from "@/shared/graphql/types.ts";
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.js';
+import { type GetListQuery, type GetListQueryVariables, GetList } from "@/shared/graphql/operations.js";
+import type { List } from "@/shared/graphql/types.js";
 
 /* Actions */
 export const GET_LIST = asyncAction(ActionTypes.GET_LIST);

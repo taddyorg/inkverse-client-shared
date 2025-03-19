@@ -1,6 +1,6 @@
 import type { ApolloClient } from '@apollo/client';
-import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.ts';
-import { HomeScreen, type ComicSeries, type HomeScreenQuery, type List } from "@/shared/graphql/operations.ts";
+import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.js';
+import { HomeScreen, type ComicSeries, type HomeScreenQuery, type List } from "@/shared/graphql/operations.js";
 
 /* Actions */
 export const GET_HOMESCREEN = asyncAction(ActionTypes.GET_HOMEFEED);
