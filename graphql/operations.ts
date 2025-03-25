@@ -1046,6 +1046,14 @@ export type MiniComicSeriesDetailsFragment = { __typename?: 'ComicSeries', uuid:
 
 export type MiniCreatorDetailsFragment = { __typename?: 'Creator', uuid: string, name?: string | null, shortUrl?: string | null, avatarImageAsString?: string | null, links?: Array<{ __typename?: 'LinkDetails', url?: string | null, type?: LinkType | null } | null> | null };
 
+export type ReportComicSeriesMutationVariables = Exact<{
+  uuid: Scalars['ID']['input'];
+  reportType?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ReportComicSeriesMutation = { __typename?: 'Mutation', reportComicSeries?: boolean | null };
+
 export type GetComicIssueQueryVariables = Exact<{
   issueUuid: Scalars['ID']['input'];
   seriesUuid: Scalars['ID']['input'];
@@ -1110,7 +1118,7 @@ export type HomeScreenQueryVariables = Exact<{ [key: string]: never; }>;
 export type HomeScreenQuery = { __typename?: 'Query', getFeaturedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getCuratedLists?: { __typename?: 'HomeScreenCuratedList', id?: string | null, lists?: Array<{ __typename?: 'List', id: string, name?: string | null, description?: string | null, bannerImageUrl?: string | null, type: ListType, privacyType: PrivacyType } | null> | null } | null, getMostPopularComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getRecentlyAddedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null, getRecentlyUpdatedComicSeries?: { __typename?: 'HomeScreenComicSeries', id?: string | null, comicSeries?: Array<{ __typename?: 'ComicSeries', uuid: string, name?: string | null, shortUrl?: string | null, coverImageAsString?: string | null, bannerImageAsString?: string | null, thumbnailImageAsString?: string | null, genre0?: Genre | null, genre1?: Genre | null, genre2?: Genre | null } | null> | null } | null };
 
 export type SearchQueryVariables = Exact<{
-  term: Scalars['String']['input'];
+  term?: InputMaybe<Scalars['String']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   limitPerPage?: InputMaybe<Scalars['Int']['input']>;
   filterForTypes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
@@ -1226,6 +1234,11 @@ export const MiniCreatorDetails = gql`
     url
     type
   }
+}
+    `;
+export const ReportComicSeries = gql`
+    mutation ReportComicSeries($uuid: ID!, $reportType: String) {
+  reportComicSeries(uuid: $uuid, reportType: $reportType)
 }
     `;
 export const GetComicIssue = gql`
@@ -1358,7 +1371,7 @@ export const HomeScreen = gql`
 }
     ${MiniComicSeriesDetails}`;
 export const Search = gql`
-    query Search($term: String!, $page: Int, $limitPerPage: Int, $filterForTypes: [String], $filterForTags: [String], $filterForGenres: [Genre]) {
+    query Search($term: String, $page: Int, $limitPerPage: Int, $filterForTypes: [String], $filterForTags: [String], $filterForGenres: [Genre]) {
   search(
     term: $term
     page: $page

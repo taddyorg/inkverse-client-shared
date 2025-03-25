@@ -1,4 +1,4 @@
-import { ApolloClient } from '@apollo/client';
+import type { ApolloClient } from '@apollo/client';
 import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.js';
 import gql from 'graphql-tag';
 
