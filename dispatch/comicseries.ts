@@ -1,6 +1,6 @@
-import type { ApolloClient } from '@apollo/client';
+import type { ApolloClient, ApolloQueryResult } from '@apollo/client';
 import { asyncAction, ActionTypes, errorHandlerFactory, type Dispatch, type Action } from './utils.js';
-import { type GetComicSeriesQuery, type GetComicSeriesQueryVariables, SortOrder, GetComicSeries, type ComicIssue, type ComicSeries } from "@/shared/graphql/operations.js";
+import { type GetComicSeriesQuery, type GetComicSeriesQueryVariables, SortOrder, GetComicSeries, type ComicIssue, type ComicSeries, GetMiniComicSeries, GetMiniComicSeriesQuery, GetMiniComicSeriesQueryVariables } from "@/shared/graphql/operations.js";
 
 /* Actions */
 export const GET_COMICSERIES = asyncAction(ActionTypes.GET_COMICSERIES);
@@ -10,6 +10,34 @@ interface GetComicSeriesProps {
   publicClient: ApolloClient<any>;
   uuid: string;
   forceRefresh?: boolean;
+}
+
+/* Action Creators */
+interface WrappedGetComicSeriesProps {
+  publicClient: ApolloClient<any>;
+  shortUrl: string;
+}
+
+export async function loadComicSeriesUrl({ publicClient, shortUrl }: WrappedGetComicSeriesProps, dispatch: Dispatch) {
+  dispatch(GET_COMICSERIES.request());
+
+  try {
+    // Then get the full comic series data
+    const getComicSeriesUuid: ApolloQueryResult<GetMiniComicSeriesQuery> = await publicClient.query<GetMiniComicSeriesQuery, GetMiniComicSeriesQueryVariables>({
+      query: GetMiniComicSeries,
+      variables: { shortUrl },
+    });
+    
+    if (!getComicSeriesUuid.data?.getComicSeries?.uuid) {
+      throw new Response("Not Found", { status: 404 });
+    }
+
+    const parsedData = parseLoaderComicSeries(getComicSeriesUuid.data);
+
+    dispatch(GET_COMICSERIES.success(parsedData));
+  } catch (error: Error | unknown) {
+    errorHandlerFactory(dispatch, GET_COMICSERIES)(error);
+  }
 }
 
 export async function loadComicSeries({ publicClient, uuid, forceRefresh = false }: GetComicSeriesProps, dispatch: Dispatch) {
