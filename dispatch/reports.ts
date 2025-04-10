@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 
 /* Actions */
 export const REPORT_COMIC_SERIES = asyncAction(ActionTypes.REPORT_COMIC_SERIES);
-
 /* GraphQL Mutation */
 export const ReportComicSeriesMutation = gql`
   mutation ReportComicSeries($uuid: ID!, $reportType: String) {
@@ -57,6 +56,10 @@ export async function submitReportComicSeries(
     errorHandlerFactory(dispatch, REPORT_COMIC_SERIES)(error);
     return false;
   }
+}
+
+export function resetReportComicSeries(dispatch: Dispatch) {
+  dispatch(REPORT_COMIC_SERIES.failure({ error: null }));
 }
 
 /* Reducers */
